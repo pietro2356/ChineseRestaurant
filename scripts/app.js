@@ -78,7 +78,7 @@ function generateMenu() {
     db.collection('menu').onSnapshot(snap => {
         snap.forEach(item => {
             res = query("tipo", "appetizers");
-            /// TODO: 
+            /// TODO:  
         });
     });
 
