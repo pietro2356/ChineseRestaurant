@@ -43,12 +43,12 @@ function query(key, val, op = "==") {
         .get()
         .then(querySnap => {
             querySnap.forEach(doc => {
-                console.log(doc.id);
+                //console.log(doc.id);
                 // console.log(doc.data());
                 queryResult.push(doc.data());
             })
         }).catch(error => {
-            console.log(error.message);
+            console.error(error.message);
         });
 
     return queryResult;

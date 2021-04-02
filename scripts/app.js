@@ -64,23 +64,37 @@ function createSection(params) {
 function generateMenu() {
     let type;
     // let arr = [];
+
+
+    db.collection('menu').onSnapshot(snap => {
+        snap.forEach(item => {
+            let res = query("tipo", "appetizers");
+            /// TODO:  
+        });
+    });
+
+    return type;
+}
+
+
+/**
+ * NON FUNZIONA!
+ */
+function getType() {
     db.collection('type').onSnapshot(snap => {
         snap.forEach(item => {
             // item.data().type => ["appetizers", "salads"];
-            type = item.data().type;
-            // console.log(item.data());
+            tmp = item.data().type;
 
             /// IMPORTANT: 
             /// TODO: Creare la funzione di generazione del menu!
         })
     });
 
-    db.collection('menu').onSnapshot(snap => {
-        snap.forEach(item => {
-            res = query("tipo", "appetizers");
-            /// TODO:  
-        });
-    });
-
-    return arr;
+    for (const typ of Object.keys(tmp)) {
+        /// IMPORTANT: Non funziona un cazzo di nulla CAZZO!
+        /// FIXME: Domani guardo, ora devo fare la notte.
+        console.log(typ);
+        type.push(typ);
+    }
 }

@@ -129,3 +129,7 @@ const localDB = [{
 const firestoreDB = [];
 
 const queryResult = [];
+
+var tmp = {};
+
+const type = [];
