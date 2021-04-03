@@ -9,3 +9,7 @@
     color: #fff;
     background: url("https://mandarinrestaurant.com/wp-content/uploads/2020/05/Peel-Eat-Shrimp.jpg") bottom right 15% no-repeat #46B6AC;
 }
+
+body {
+    background-color: #eee;
+}
