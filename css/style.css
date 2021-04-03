@@ -1,15 +1,39 @@
-/*<!-- Square card -->*/
-
-.demo-card-square.mdl-card {
-    width: 320px;
-    height: 320px;
-}
-
-.demo-card-square>.mdl-card__title {
-    color: #fff;
-    background: url("https://mandarinrestaurant.com/wp-content/uploads/2020/05/Peel-Eat-Shrimp.jpg") bottom right 15% no-repeat #46B6AC;
-}
-
 body {
     background-color: #eee;
+}
+
+
+/*CARD*/
+
+.demo-card-square.mdl-card {
+    width: 30%;
+    margin: 0 1.5%;
+    background: #fff;
+    float: left;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 40px auto;
+}
+
+.clearfix:after {
+    visibility: hidden;
+    display: block;
+    font-size: 0;
+    content: " ";
+    clear: both;
+    height: 0;
+}
+
+.clearfix {
+    display: inline-block;
+}
+
+* html .clearfix {
+    height: 1%;
+}
+
+.clearfix {
+    display: block;
 }
