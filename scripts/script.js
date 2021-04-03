@@ -2,35 +2,6 @@ const remoteDB = firebase.firestore();
 const type = [];
 const cards = [];
 
-
-/**
- * @description Classe piatto
- */
-class Piatto {
-    constructor(id, code, nome, prezzo, calorie, note, imgPath, section, tipo) {
-        this.id = id;
-        this.code = code;
-        this.nome = nome;
-        this.prezzo = prezzo;
-        this.calorie = calorie;
-        this.note = note;
-        this.imgPath = imgPath;
-        this.section = section;
-        this.tipo = tipo;
-    }
-    toString() {
-        return "[" + this.id + ", " +
-            this.code + ", " +
-            this.nome + ", " +
-            this.prezzo + ", " +
-            this.calorie + ", " +
-            this.note + ", " +
-            this.imgPath + ", " +
-            this.section + ", " +
-            this.tipo + "]";
-    }
-}
-
 /**
  * @description Funzione principale del programma per scaricare il db da Firebase.
  */
@@ -124,20 +95,6 @@ function createDyCard(piatto) {
     card.appendChild(cardMedia);
     card.appendChild(txt);
     card.appendChild(btnContainer);
-
-    return card;
-}
-
-/**
- * @deprecated
- */
-function createCard(piatto) {
-    let card = "<div class='mdl-card__media' id='" + piatto.id + "'>"; // Header card.
-    card += "<img src='" + piatto.imgPath + "'></div><div class='mdl-card__supporting-text'>"; // Immagine card.
-    card += piatto.toString() + "</div>";
-
-    // Footer della card con bottoni.
-    card += "<div class='mdl-card__actions'><a class='mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect'>ADD 1</a><a class='mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect'>DEL 1</a></div></div>";
 
     return card;
 }
