@@ -15,11 +15,43 @@
 </head>
 
 <body>
-    <h1>CIAO A TUTTI</h1>
-    <div id="item"></div>
+    <!-- Always shows a header, even in smaller screens. -->
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+        <header class="mdl-layout__header">
+            <div class="mdl-layout__header-row">
+                <!-- Title -->
+                <span class="mdl-layout-title">Chinese Restaurant</span>
+                <!-- Add spacer, to align navigation to the right -->
+                <div class="mdl-layout-spacer"></div>
+                <!-- Navigation. We hide it in small screens. -->
+                <nav class="mdl-navigation mdl-layout--large-screen-only">
+                    <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" onclick="getDbFromFirebase()">GENERA MENU</button>
+                    <p class="mdl-navigation__link" id="conto">0</p>
+                    <a class="mdl-navigation__link" href="">NULLA</a>
+                    <a class="mdl-navigation__link" href="">NULLA</a>
+                </nav>
+            </div>
+        </header>
+        <div class="mdl-layout__drawer">
+            <span class="mdl-layout-title">Chinese Restaurant</span>
+            <nav class="mdl-navigation">
+                <a class="mdl-navigation__link" href="">Link</a>
+                <a class="mdl-navigation__link" href="">Link</a>
+                <a class="mdl-navigation__link" href="">Link</a>
+                <a class="mdl-navigation__link" href="">Link</a>
+            </nav>
+        </div>
+        <main class="mdl-layout__content">
+            <div class="page-content">
+                <!-- Your content goes here -->
+            </div>
+        </main>
+    </div>
     <!-- Accent-colored raised button with ripple -->
-    <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" onclick="getDbFromFirebase()">GENERA MENU</button>
-    <div id="container"></div>
+
+    <div id="container" class="clearfix"></div>
+
+
 
 
 

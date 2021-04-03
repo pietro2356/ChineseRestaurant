@@ -18,6 +18,12 @@ body {
     margin: 40px auto;
 }
 
+.mdl-layout__header {
+    /* background-color: #b98cf5; */
+    /* background-color: #e37ba3; */
+    background-color: #a7cc87;
+}
+
 .clearfix:after {
     visibility: hidden;
     display: block;

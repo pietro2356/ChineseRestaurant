@@ -1,6 +1,9 @@
 const remoteDB = firebase.firestore();
 const type = [];
 const cards = [];
+const queryResult = [];
+const conto = 0;
+var ordine = [];
 
 /**
  * @description Funzione principale del programma per scaricare il db da Firebase.
@@ -37,11 +40,6 @@ function getDbFromFirebase() {
                 cont.appendChild(containerType);
             }
 
-            //
-            //  TODO: 
-            //      1: Creare la card corrispondente all'oggetto Piatto
-            //      2: Ordinarle in base ai parametri
-
             // In base al tipo crea la card nel container corrispondente;
             if (piatto.tipo === "appetizers") {
                 let containerAppetizer = document.getElementById("appetizers");
@@ -70,7 +68,7 @@ function createDyCard(piatto) {
     // Testo della card
     let txt = document.createElement("div");
     txt.className = "mdl-card__supporting-text";
-    let data = document.createTextNode(piatto.nome + " " + piatto.prezzo);
+    let data = document.createTextNode(piatto.code + " - " + piatto.nome + " - " + piatto.prezzo);
     txt.appendChild(data);
 
 
@@ -80,13 +78,15 @@ function createDyCard(piatto) {
 
     // Bottoni della card
     let btnAdd = document.createElement("button");
-    btnAdd.className = "mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect";
+    btnAdd.className = "mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect add";
+    btnAdd.id = piatto.code;
     let txtBtnAdd = document.createTextNode("ADD");
     btnAdd.appendChild(txtBtnAdd);
     btnContainer.appendChild(btnAdd);
 
     let btnDel = document.createElement("button");
-    btnDel.className = "mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect";
+    btnDel.className = "mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect del";
+    btnDel.id = piatto.code;
     let txtBtnDel = document.createTextNode("DEL");
     btnDel.appendChild(txtBtnDel);
     btnContainer.appendChild(btnDel);
@@ -97,4 +97,55 @@ function createDyCard(piatto) {
     card.appendChild(btnContainer);
 
     return card;
+}
+
+
+//*** GLOBALE ***//
+document.addEventListener("click", (event) => {
+    console.log(event.target.className);
+    console.log(event.target.parentNode.parentNode.id);
+
+    // TODO: 
+    //  - event.target.className contiene "add" o "del" -> richiama le funzioni aggiungiPiatto() o rimuoviPiatto();
+    //  - event.target.parentNode.parentNode.id: da qui prendi l'ID del piatto, fare una query per valutarne la presenza;
+    //  - IMPLEMENT: 
+    //      - Logica di invio degli ordini.
+    //      - Logica eliminazione ordine.
+
+});
+
+//*** CARRELLO ***//
+function aggiungiPiatto(id) {
+    ordine.push(query)
+}
+
+function rimuoviPiatto(id) {
+    console.error("Function not implemented yet!");
+}
+
+function cancellaOrdine() {
+    console.error("Function not implemented yet!");
+}
+
+function inviaOrdine() {
+    console.error("Function not implemented yet!");
+}
+
+
+
+//*** FIREBASE ***//
+function query(id) {
+    remoteDB.collection('menu').doc(id)
+        .get()
+        .then(doc => {
+            if (doc.exists) {
+                console.log(doc.data());
+                queryResult.push(doc.data())
+            } else {
+                console.error("ID non esistente");
+            }
+        })
+        .catch(error => {
+            console.error(error);
+        });
 }
