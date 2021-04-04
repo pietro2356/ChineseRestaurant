@@ -5,8 +5,12 @@ var queryResult = [];
 var conto = 0;
 var ordine = [];
 
+
+
+//*** SEZIONE GENERALE ***//
+
 /**
- * @description Funzione principale del programma per scaricare il db da Firebase.
+ * @description Funzione che permette la generazione del menù.
  */
 function generaMenu() {
     remoteDB.collection("menu").get().then((querySnapshot) => {
@@ -52,6 +56,14 @@ function generaMenu() {
     });
 }
 
+/**
+ * 
+ * @param {Object} piatto => Istanza della classe Piatto.
+ * @returns => Ritorna una card DOM.
+ * 
+ * @description La funzione permette di creare delle card dinamiche in base
+ *      al contenuto dell'istanza piatto che viene passata come argomento.
+ */
 function createDyCard(piatto) {
     //Card generale
     let card = document.createElement("div");
@@ -101,7 +113,195 @@ function createDyCard(piatto) {
 }
 
 
-//*** GLOBALE ***//
+//*** SEZIONE CARRELLO ***//
+
+/**
+ * 
+ * @param {String} id => ID Firebase relativo al codice piatto.
+ * @param {Number} pr => Prezzo del singolo piatto.
+ * @param {String} nome => Nome del singolo piatto.
+ * 
+ * @description {
+ *      La funzione permette di AGGIUNGERE un piatto alla lista degl'ordini
+ *      controllando se un determinato piatto esista o meno nella suddetta
+ *      lista. }
+ */
+function aggiungiPiatto(id, pr, nome) {
+    // Oggetto base ordine
+    let ord = {
+        piatto: id,
+        nome: nome,
+        qt: 1,
+        pr: pr
+    }
+
+    // Controllo che lo stesso piatto non sia già presente nel vettore ordine!
+    if (arrayContainsObject(ord, ordine)) {
+        let i = ordine.findIndex(item => item.piatto === id);
+        ordine[i].qt++;
+    } else {
+        ordine.push(ord);
+    }
+    aggiornaOrdine();
+}
+
+/**
+ * 
+ * @param {String} id => ID Firebase relativo al codice piatto.
+ * @param {Number} pr => Prezzo del singolo piatto.
+ * 
+ * @description {
+ *      La funzione permette di RIMUOVERE un piatto alla lista degl'ordini
+ *      controllando se un determinato piatto esista o meno nella suddetta
+ *      lista. }
+ */
+function rimuoviPiatto(id, pr) {
+    for (const ord of ordine) {
+        if (ord.piatto === id) {
+            if (ord.qt > 1) {
+                ord.qt--;
+            } else if (ord.qt <= 1) {
+                ordine.splice(ordine.findIndex(item => item.piatto === id), 1);
+            }
+        } else {
+            console.error("Piatto " + id + " non trovato.");
+        }
+    }
+    aggiornaOrdine();
+}
+
+/**
+ * @description {
+ *      La funzione permette di CANCELLARE l'ordine agendo su:
+ *          - DB locale per tenere traccia degli ordini.
+ *          - DB Firebase in caso un ordine sia già pervenuto. 
+ *      }
+ */
+function cancellaOrdine() {
+    ordine = [];
+    aggiornaOrdine();
+    deleteOrder();
+}
+
+/**
+ * @description {
+ *      La funzione permette di INVIARE l'ordine sul DB di Firebase. }
+ */
+function inviaOrdine() {
+    for (const ord of ordine) {
+        write(ord);
+    }
+}
+
+/**
+ * @description {
+ *      La funzione permette di AGGIORNARE le informazioni relative allo stato dell'ordine: 
+ *          - N° di piatti ordinati.
+ *          - Prezzo totale.
+ *      }
+ */
+function aggiornaOrdine() {
+    let prezzo = document.getElementById("conto");
+    let nOrdini = document.getElementById("ordini");
+
+    // nOrdini.innerHTML = ordine.length;
+
+    conto = 0;
+    nOrd = 0;
+    for (const ord of ordine) {
+        conto += ord.pr * ord.qt;
+        nOrd += ord.qt;
+    }
+
+    prezzo.innerHTML = "€" + conto;
+    nOrdini.innerHTML = "N° ordini " + nOrd;
+}
+
+
+//*** SEZIONE CONTROLLO ***//
+
+/**
+ * 
+ * @param {Object} obj => Oggetto da passare. 
+ * @param {Array} arr => Array dove controllare che l'oggetto vi sia o meno.
+ * @returns {Boolean} obj è contenuto in arr -> true, altrimenti false.
+ * 
+ * @description Questa funzione serve per controllare che l'oggetto ord (ordine) esista già 
+ *      all'interno del vetttore ordine.
+ */
+function arrayContainsObject(obj, arr) {
+    return arr.some(item => item.piatto === obj.piatto);
+}
+
+
+
+//*** SEZIONE FIREBASE ***//
+
+/**
+ * @deprecated
+ * 
+ * @param {String} id => ID Firebase relativo al codice piatto.
+ * @description Questa funzione serve per scaricare i vari dati dal DB Firebase.
+ */
+function query(id) {
+    remoteDB.collection('menu').doc(id)
+        .get()
+        .then(doc => {
+            if (doc.exists) {
+                console.log(doc.data());
+                queryResult.push(doc.data())
+            } else {
+                console.error("ID non esistente");
+            }
+        })
+        .catch(error => {
+            console.error(error);
+        });
+}
+
+
+/**
+ * 
+ * @param {Object} obj => Oggetto piatto da scrivere.
+ * @description Questa funzione permette di SCRIVERE un oggetto sul db Firebase. 
+ */
+function write(obj) {
+    remoteDB.collection("ordine")
+        .add(obj)
+        .then(() => {
+            console.log("Ordine inviato con successo!");
+        })
+        .catch(error => {
+            console.error(error);
+        });
+}
+
+/**
+ * @description Questa funzione permette di ELIMINARE tutti gli ordini pervenuti al
+ *      DB di Firebase.
+ */
+function deleteOrder() {
+    remoteDB.collection("ordine")
+        .get()
+        .then((snap) => {
+            snap.forEach(doc => {
+                doc.ref.delete();
+            })
+        });
+}
+
+
+//*** SEZIONE DOM ***//
+
+/**
+ * @description Funzione per generare il menù in automatico, non appena il 
+ *      DOM sarà caricato
+ */
+document.addEventListener("DOMContentLoaded", function() {
+    generaMenu();
+});
+
+
 document.addEventListener("click", (event) => {
     // console.log(event.target.className);
     // console.log(event.target.parentNode.parentNode.id);
@@ -123,117 +323,4 @@ document.addEventListener("click", (event) => {
         rimuoviPiatto(event.target.parentNode.parentNode.id, prezzo, nome);
     }
 
-});
-
-//*** CARRELLO ***//
-function aggiungiPiatto(id, pr, nome) {
-    // Oggetto base ordine
-    let ord = {
-        piatto: id,
-        nome: nome,
-        qt: 1,
-        pr: pr
-    }
-
-    // Controllo che lo stesso piatto non sia già presente nel vettore ordine!
-    if (arrayContainsObject(ord, ordine)) {
-        let i = ordine.findIndex(item => item.piatto === id);
-        ordine[i].qt++;
-    } else {
-        ordine.push(ord);
-    }
-    aggiornaOrdine();
-}
-
-function rimuoviPiatto(id, pr) {
-    for (const ord of ordine) {
-        if (ord.piatto === id) {
-            if (ord.qt > 1) {
-                ord.qt--;
-            } else if (ord.qt <= 1) {
-                ordine.splice(ordine.findIndex(item => item.piatto === id), 1);
-            }
-        } else {
-            console.error("Piatto " + id + " non trovato.");
-        }
-    }
-    aggiornaOrdine();
-}
-
-function cancellaOrdine() {
-    ordine = [];
-    aggiornaOrdine();
-    deleteOrder();
-}
-
-function inviaOrdine() {
-    for (const ord of ordine) {
-        write(ord);
-    }
-}
-
-function aggiornaOrdine() {
-    let prezzo = document.getElementById("conto");
-    let nOrdini = document.getElementById("ordini");
-
-    // nOrdini.innerHTML = ordine.length;
-
-    conto = 0;
-    nOrd = 0;
-    for (const ord of ordine) {
-        conto += ord.pr * ord.qt;
-        nOrd += ord.qt;
-    }
-
-    prezzo.innerHTML = "€" + conto;
-    nOrdini.innerHTML = "N° ordini " + nOrd;
-}
-
-function arrayContainsObject(obj, arr) {
-    return arr.some(item => item.piatto === obj.piatto);
-}
-
-
-//*** FIREBASE ***//
-function query(id) {
-    remoteDB.collection('menu').doc(id)
-        .get()
-        .then(doc => {
-            if (doc.exists) {
-                console.log(doc.data());
-                queryResult.push(doc.data())
-            } else {
-                console.error("ID non esistente");
-            }
-        })
-        .catch(error => {
-            console.error(error);
-        });
-}
-
-function write(obj) {
-    remoteDB.collection("ordine")
-        .add(obj)
-        .then(() => {
-            console.log("Ordine inviato con successo!");
-        })
-        .catch(error => {
-            console.error(error);
-        });
-}
-
-function deleteOrder() {
-    remoteDB.collection("ordine")
-        .get()
-        .then((snap) => {
-            snap.forEach(doc => {
-                doc.ref.delete();
-            })
-        });
-}
-
-
-//*** DOM ***//
-document.addEventListener("DOMContentLoaded", function() {
-    generaMenu();
 });
