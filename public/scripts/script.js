@@ -1,4 +1,4 @@
-const remoteDB = firebase.firestore();
+var remoteDB;
 const type = [];
 const cards = [];
 var queryResult = [];
@@ -20,7 +20,6 @@ function generaMenu() {
             let piatto = new Piatto(doc.id, data.code, data.nome, data.prezzo, data.calorie, data.note, data.imgPath, data.section, data.tipo);
             //console.log(doc.id, " => ", doc.data());
             console.log(piatto.toJSON());
-
 
             // Creazione dei divisori per i piatti
             if (!type.includes(piatto.tipo)) {
@@ -339,6 +338,7 @@ function deleteOrder() {
  *      DOM sarà caricato
  */
 document.addEventListener("DOMContentLoaded", function() {
+    remoteDB = firebase.firestore();
     generaMenu();
 });
 
