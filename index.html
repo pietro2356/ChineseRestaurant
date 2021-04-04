@@ -25,10 +25,11 @@
                 <div class="mdl-layout-spacer"></div>
                 <!-- Navigation. We hide it in small screens. -->
                 <nav class="mdl-navigation mdl-layout--large-screen-only">
-                    <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" onclick="getDbFromFirebase()">GENERA MENU</button>
-                    <p class="mdl-navigation__link" id="conto">0</p>
-                    <a class="mdl-navigation__link" href="">NULLA</a>
-                    <a class="mdl-navigation__link" href="">NULLA</a>
+                    <p class="mdl-navigation__link" id="ordini">N° ordini 0</p>
+                    <p class="mdl-navigation__link" id="conto">€0</p>
+                    <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" onclick="inviaOrdine()">INVIA ORDINE</button>
+                    <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" onclick="cancellaOrdine()">CANCELLA ORDINE</button>
+
                 </nav>
             </div>
         </header>

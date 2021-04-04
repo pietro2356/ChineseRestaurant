@@ -24,4 +24,17 @@ class Piatto {
             this.section + ", " +
             this.tipo + "]";
     }
+    toJSON() {
+        return {
+            id: this.id,
+            code: this.code,
+            nome: this.nome,
+            prezzo: this.prezzo,
+            calorie: this.calorie,
+            note: this.note,
+            imgPath: this.imgPath,
+            section: this.section,
+            tipo: this.tipo
+        }
+    }
 }

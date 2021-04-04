@@ -1,21 +1,21 @@
 const remoteDB = firebase.firestore();
 const type = [];
 const cards = [];
-const queryResult = [];
-const conto = 0;
+var queryResult = [];
+var conto = 0;
 var ordine = [];
 
 /**
  * @description Funzione principale del programma per scaricare il db da Firebase.
  */
-function getDbFromFirebase() {
+function generaMenu() {
     remoteDB.collection("menu").get().then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
             // doc.data() is never undefined for query doc snapshots
             let data = doc.data();
             let piatto = new Piatto(doc.id, data.code, data.nome, data.prezzo, data.calorie, data.note, data.imgPath, data.section, data.tipo);
             //console.log(doc.id, " => ", doc.data());
-            console.log(piatto.toString());
+            console.log(piatto.toJSON());
 
 
             // Creazione dei divisori per i piatti
@@ -75,18 +75,19 @@ function createDyCard(piatto) {
     // Container dei bottoni
     let btnContainer = document.createElement("div");
     btnContainer.className = "mdl-card__actions";
+    btnContainer.id = piatto.prezzo;
 
     // Bottoni della card
     let btnAdd = document.createElement("button");
     btnAdd.className = "mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect add";
-    btnAdd.id = piatto.code;
+    btnAdd.id = piatto.nome;
     let txtBtnAdd = document.createTextNode("ADD");
     btnAdd.appendChild(txtBtnAdd);
     btnContainer.appendChild(btnAdd);
 
     let btnDel = document.createElement("button");
     btnDel.className = "mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect del";
-    btnDel.id = piatto.code;
+    btnDel.id = piatto.nome;
     let txtBtnDel = document.createTextNode("DEL");
     btnDel.appendChild(txtBtnDel);
     btnContainer.appendChild(btnDel);
@@ -102,8 +103,9 @@ function createDyCard(piatto) {
 
 //*** GLOBALE ***//
 document.addEventListener("click", (event) => {
-    console.log(event.target.className);
-    console.log(event.target.parentNode.parentNode.id);
+    // console.log(event.target.className);
+    // console.log(event.target.parentNode.parentNode.id);
+
 
     // TODO: 
     //  - event.target.className contiene "add" o "del" -> richiama le funzioni aggiungiPiatto() o rimuoviPiatto();
@@ -112,25 +114,84 @@ document.addEventListener("click", (event) => {
     //      - Logica di invio degli ordini.
     //      - Logica eliminazione ordine.
 
+    let prezzo = parseFloat(event.target.parentNode.id);
+    let nome = event.target.id;
+
+    if (event.target.className.includes("add")) {
+        aggiungiPiatto(event.target.parentNode.parentNode.id, prezzo, nome)
+    } else if (event.target.className.includes("del")) {
+        rimuoviPiatto(event.target.parentNode.parentNode.id, prezzo, nome);
+    }
+
 });
 
 //*** CARRELLO ***//
-function aggiungiPiatto(id) {
-    ordine.push(query)
+function aggiungiPiatto(id, pr, nome) {
+    // Oggetto base ordine
+    let ord = {
+        piatto: id,
+        nome: nome,
+        qt: 1,
+        pr: pr
+    }
+
+    // Controllo che lo stesso piatto non sia già presente nel vettore ordine!
+    if (arrayContainsObject(ord, ordine)) {
+        let i = ordine.findIndex(item => item.piatto === id);
+        ordine[i].qt++;
+    } else {
+        ordine.push(ord);
+    }
+    aggiornaOrdine();
 }
 
-function rimuoviPiatto(id) {
-    console.error("Function not implemented yet!");
+function rimuoviPiatto(id, pr) {
+    for (const ord of ordine) {
+        if (ord.piatto === id) {
+            if (ord.qt > 1) {
+                ord.qt--;
+            } else if (ord.qt <= 1) {
+                ordine.splice(ordine.findIndex(item => item.piatto === id), 1);
+            }
+        } else {
+            console.error("Piatto " + id + " non trovato.");
+        }
+    }
+    aggiornaOrdine();
 }
 
 function cancellaOrdine() {
-    console.error("Function not implemented yet!");
+    ordine = [];
+    aggiornaOrdine();
+    deleteOrder();
 }
 
 function inviaOrdine() {
-    console.error("Function not implemented yet!");
+    for (const ord of ordine) {
+        write(ord);
+    }
 }
 
+function aggiornaOrdine() {
+    let prezzo = document.getElementById("conto");
+    let nOrdini = document.getElementById("ordini");
+
+    // nOrdini.innerHTML = ordine.length;
+
+    conto = 0;
+    nOrd = 0;
+    for (const ord of ordine) {
+        conto += ord.pr * ord.qt;
+        nOrd += ord.qt;
+    }
+
+    prezzo.innerHTML = "€" + conto;
+    nOrdini.innerHTML = "N° ordini " + nOrd;
+}
+
+function arrayContainsObject(obj, arr) {
+    return arr.some(item => item.piatto === obj.piatto);
+}
 
 
 //*** FIREBASE ***//
@@ -149,3 +210,30 @@ function query(id) {
             console.error(error);
         });
 }
+
+function write(obj) {
+    remoteDB.collection("ordine")
+        .add(obj)
+        .then(() => {
+            console.log("Ordine inviato con successo!");
+        })
+        .catch(error => {
+            console.error(error);
+        });
+}
+
+function deleteOrder() {
+    remoteDB.collection("ordine")
+        .get()
+        .then((snap) => {
+            snap.forEach(doc => {
+                doc.ref.delete();
+            })
+        });
+}
+
+
+//*** DOM ***//
+document.addEventListener("DOMContentLoaded", function() {
+    generaMenu();
+});
