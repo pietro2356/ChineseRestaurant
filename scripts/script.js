@@ -80,8 +80,18 @@ function createDyCard(piatto) {
     // Testo della card
     let txt = document.createElement("div");
     txt.className = "mdl-card__supporting-text";
-    let data = document.createTextNode(piatto.code + " - " + piatto.nome + " - " + piatto.prezzo);
+    let txt2 = document.createElement("div");
+    txt2.className = "mdl-card__supporting-text";
+    let data = document.createTextNode(
+        piatto.nome + " - " +
+        piatto.calorie + " - €" +
+        piatto.prezzo
+    );
+    let data2 = document.createTextNode(
+        "Note: " + piatto.note
+    );
     txt.appendChild(data);
+    txt2.appendChild(data2);
 
 
     // Container dei bottoni
@@ -89,24 +99,53 @@ function createDyCard(piatto) {
     btnContainer.className = "mdl-card__actions";
     btnContainer.id = piatto.prezzo;
 
+    //     <!-- Colored FAB button with ripple -->
+    // <button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
+    //   <i class="material-icons">add</i>
+    // </button>
+
     // Bottoni della card
     let btnAdd = document.createElement("button");
-    btnAdd.className = "mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect add";
+    btnAdd.className = "mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent add";
     btnAdd.id = piatto.nome;
-    let txtBtnAdd = document.createTextNode("ADD");
+    let txtBtnAdd = document.createTextNode("AGGIUNGI");
     btnAdd.appendChild(txtBtnAdd);
-    btnContainer.appendChild(btnAdd);
+
 
     let btnDel = document.createElement("button");
     btnDel.className = "mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect del";
     btnDel.id = piatto.nome;
-    let txtBtnDel = document.createTextNode("DEL");
+    let txtBtnDel = document.createTextNode("RIMUOVI");
     btnDel.appendChild(txtBtnDel);
+
+
+
+    // Chip con prezzo e codice
+    let chipPrezzo = document.createElement("span");
+    chipPrezzo.className = "mdl-chip mdl-chip--contact";
+
+    let chipPrezzoIco = document.createElement("span");
+    chipPrezzoIco.className = "mdl-chip__contact mdl-color--teal mdl-color-text--white";
+    let icoTxt = document.createTextNode(piatto.code);
+    chipPrezzoIco.appendChild(icoTxt);
+
+    let chipPrezzoTxt = document.createElement("span");
+    chipPrezzoTxt.className = "mdl-chip__text";
+    let txtPrezzo = document.createTextNode("€" + piatto.prezzo);
+    chipPrezzoTxt.appendChild(txtPrezzo);
+
+    chipPrezzo.appendChild(chipPrezzoIco);
+    chipPrezzo.appendChild(chipPrezzoTxt);
+
+    // Append per il container dei bottoni
+    btnContainer.appendChild(btnAdd);
     btnContainer.appendChild(btnDel);
+    btnContainer.appendChild(chipPrezzo);
 
     // Append necessari per comporre la CARD finale.
     card.appendChild(cardMedia);
     card.appendChild(txt);
+    card.appendChild(txt2);
     card.appendChild(btnContainer);
 
     return card;
@@ -137,6 +176,7 @@ function aggiungiPiatto(id, pr, nome) {
 
     // Controllo che lo stesso piatto non sia già presente nel vettore ordine!
     if (arrayContainsObject(ord, ordine)) {
+        //IMPORTANT: HIGH ORDER FUNCTION
         let i = ordine.findIndex(item => item.piatto === id);
         ordine[i].qt++;
     } else {
@@ -155,12 +195,13 @@ function aggiungiPiatto(id, pr, nome) {
  *      controllando se un determinato piatto esista o meno nella suddetta
  *      lista. }
  */
-function rimuoviPiatto(id, pr) {
+function rimuoviPiatto(id) {
     for (const ord of ordine) {
         if (ord.piatto === id) {
             if (ord.qt > 1) {
                 ord.qt--;
             } else if (ord.qt <= 1) {
+                //IMPORTANT: HIGH ORDER FUNCTION
                 ordine.splice(ordine.findIndex(item => item.piatto === id), 1);
             }
         } else {
@@ -303,14 +344,15 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 document.addEventListener("click", (event) => {
+    // DEBUG:
     // console.log(event.target.className);
     // console.log(event.target.parentNode.parentNode.id);
 
 
-    // TODO: 
+    // NOTE: 
     //  - event.target.className contiene "add" o "del" -> richiama le funzioni aggiungiPiatto() o rimuoviPiatto();
     //  - event.target.parentNode.parentNode.id: da qui prendi l'ID del piatto, fare una query per valutarne la presenza;
-    //  - IMPLEMENT: 
+    //  - NOTE: 
     //      - Logica di invio degli ordini.
     //      - Logica eliminazione ordine.
 
