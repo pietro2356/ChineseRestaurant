@@ -178,7 +178,7 @@ function aggiungiPiatto(id, pr, nome) {
         ordine.push(ord);
     }
     var snackbarContainer = document.querySelector('#demo-toast-example');
-    var data = { message: 'Piatto ' + ord.piatto + ' rimosso con successo!' };
+    var data = { message: 'Piatto ' + ord.piatto + ' aggiunto con successo!' };
     snackbarContainer.MaterialSnackbar.showSnackbar(data);
     aggiornaOrdine();
 }
