@@ -6,7 +6,6 @@ var conto = 0;
 var ordine = [];
 
 
-
 //*** SEZIONE GENERALE ***//
 
 /**
@@ -15,11 +14,13 @@ var ordine = [];
 function generaMenu() {
     remoteDB.collection("menu").get().then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
-            // doc.data() is never undefined for query doc snapshots
+
             let data = doc.data();
             let piatto = new Piatto(doc.id, data.code, data.nome, data.prezzo, data.calorie, data.note, data.imgPath, data.section, data.tipo);
+            // DEBUG:
             //console.log(doc.id, " => ", doc.data());
-            console.log(piatto.toJSON());
+            // console.log(piatto.toString());
+            // console.log(piatto.toJSON());
 
             // Creazione dei divisori per i piatti
             if (!type.includes(piatto.tipo)) {
@@ -82,9 +83,8 @@ function createDyCard(piatto) {
     let txt2 = document.createElement("div");
     txt2.className = "mdl-card__supporting-text";
     let data = document.createTextNode(
-        piatto.nome + " - " +
-        piatto.calorie + " - €" +
-        piatto.prezzo
+        piatto.nome + " - Calorie: " +
+        piatto.calorie
     );
     let data2 = document.createTextNode(
         "Note: " + piatto.note
@@ -98,10 +98,6 @@ function createDyCard(piatto) {
     btnContainer.className = "mdl-card__actions";
     btnContainer.id = piatto.prezzo;
 
-    //     <!-- Colored FAB button with ripple -->
-    // <button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
-    //   <i class="material-icons">add</i>
-    // </button>
 
     // Bottoni della card
     let btnAdd = document.createElement("button");
@@ -170,7 +166,7 @@ function aggiungiPiatto(id, pr, nome) {
         piatto: id,
         nome: nome,
         qt: 1,
-        pr: pr
+        pr: pr,
     }
 
     // Controllo che lo stesso piatto non sia già presente nel vettore ordine!
@@ -181,6 +177,9 @@ function aggiungiPiatto(id, pr, nome) {
     } else {
         ordine.push(ord);
     }
+    var snackbarContainer = document.querySelector('#demo-toast-example');
+    var data = { message: 'Piatto ' + ord.piatto + ' rimosso con successo!' };
+    snackbarContainer.MaterialSnackbar.showSnackbar(data);
     aggiornaOrdine();
 }
 
@@ -203,11 +202,15 @@ function rimuoviPiatto(id) {
                 //IMPORTANT: HIGH ORDER FUNCTION
                 ordine.splice(ordine.findIndex(item => item.piatto === id), 1);
             }
+            var snackbarContainer = document.querySelector('#demo-toast-example');
+            var data = { message: 'Piatto ' + ord.piatto + ' rimosso con successo!' };
+            snackbarContainer.MaterialSnackbar.showSnackbar(data);
         } else {
             console.error("Piatto " + id + " non trovato.");
         }
     }
     aggiornaOrdine();
+
 }
 
 /**
@@ -221,6 +224,9 @@ function cancellaOrdine() {
     ordine = [];
     aggiornaOrdine();
     deleteOrder();
+    var snackbarContainer = document.querySelector('#demo-toast-example');
+    var data = { message: 'Ordine cancellato con successo!' };
+    snackbarContainer.MaterialSnackbar.showSnackbar(data);
 }
 
 /**
@@ -231,6 +237,9 @@ function inviaOrdine() {
     for (const ord of ordine) {
         write(ord);
     }
+    var snackbarContainer = document.querySelector('#demo-toast-example');
+    var data = { message: 'Ordine inviato con successo!' };
+    snackbarContainer.MaterialSnackbar.showSnackbar(data);
 }
 
 /**
@@ -288,7 +297,8 @@ function query(id) {
         .get()
         .then(doc => {
             if (doc.exists) {
-                console.log(doc.data());
+                // DEBUG:
+                //console.log(doc.data());
                 queryResult.push(doc.data())
             } else {
                 console.error("ID non esistente");
@@ -309,7 +319,8 @@ function write(obj) {
     remoteDB.collection("ordine")
         .add(obj)
         .then(() => {
-            console.log("Ordine inviato con successo!");
+            // DEBUG:
+            //console.log("Ordine inviato con successo!");
         })
         .catch(error => {
             console.error(error);
@@ -343,6 +354,9 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 
+/**
+ * @description Funzione per rilavare i click sui bottoni.
+ */
 document.addEventListener("click", (event) => {
     // DEBUG:
     // console.log(event.target.className);
@@ -364,5 +378,4 @@ document.addEventListener("click", (event) => {
     } else if (event.target.className.includes("del")) {
         rimuoviPiatto(event.target.parentNode.parentNode.id, prezzo, nome);
     }
-
 });

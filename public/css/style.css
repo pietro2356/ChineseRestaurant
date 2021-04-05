@@ -3,6 +3,10 @@ body {
     font-family: "Roboto";
 }
 
+* html .clearfix {
+    height: 1%;
+}
+
 
 /*CARD*/
 
@@ -19,8 +23,6 @@ body {
 }
 
 .mdl-layout__header {
-    /* background-color: #b98cf5; */
-    /* background-color: #e37ba3; */
     background-color: #a7cc87;
 }
 
@@ -35,12 +37,5 @@ body {
 
 .clearfix {
     display: inline-block;
-}
-
-* html .clearfix {
-    height: 1%;
-}
-
-.clearfix {
     display: block;
 }
